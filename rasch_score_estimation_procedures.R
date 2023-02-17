@@ -90,6 +90,26 @@ amle_estimation <- function(difficulties, raw_score){
   )
 }
 
+###*****      Iterative procedures for ability estimates and SEM # from https://raschmeas.info/
+## Abililty
+ability <- function (r, d, stop=0.005) { # r is raw score; d is vector of logit difficulties
+  b <- log (r / (length (d)-r))    # Initialize
+  repeat {
+    adjust <- (r - sum(P(b,d))) / sum(PQ (P(b,d)))
+    b <- b + adjust
+    if (abs(adjust) < stop) return (b)
+  }      }
+P <- function (b, d) (1 / (1+exp (d-b))) # computationally convenient form for probability
+PQ <- function (p) (p-p^2) # p(1-p) aka inverse of the 2nd derivative
+  
+  # Full blown SEM
+sem <- function (b, d) {
+     s <-  NA
+    for (r in 1:length(b))
+          s[r] <- 1 / sqrt(sum(PQ(P(b[r],d))))
+ return (s)
+}
+
 # Procedure for EAP to MLE estimation- EAP -------------------------------------
 ## From Irtoys: https://github.com/cran/irtoys
 
